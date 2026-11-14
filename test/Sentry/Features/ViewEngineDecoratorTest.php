@@ -55,7 +55,9 @@ class ViewEngineDecoratorTest extends TestCase
 
         // `EngineResolver::forget()` does not exist on older Laravel versions, so clear the resolved engine cache directly
         $resolved = new ReflectionProperty($engineResolver, 'resolved');
-        $resolved->setAccessible(true);
+        if (\PHP_VERSION_ID < 80100) {
+            $resolved->setAccessible(true);
+        }
 
         for ($i = 0; $i < 10; $i++) {
             $cache = $resolved->getValue($engineResolver);
