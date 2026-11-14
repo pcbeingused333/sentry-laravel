@@ -53,8 +53,14 @@ class ViewEngineDecoratorTest extends TestCase
 
         $before = $this->countWildcardComposers();
 
+        // `EngineResolver::forget()` does not exist on older Laravel versions, so clear the resolved engine cache directly
+        $resolved = new ReflectionProperty($engineResolver, 'resolved');
+        $resolved->setAccessible(true);
+
         for ($i = 0; $i < 10; $i++) {
-            $engineResolver->forget('blade');
+            $cache = $resolved->getValue($engineResolver);
+            unset($cache['blade']);
+            $resolved->setValue($engineResolver, $cache);
             $engineResolver->resolve('blade');
         }
 
